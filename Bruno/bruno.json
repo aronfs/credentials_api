@@ -1,0 +1,15 @@
+{
+  "version": "1",
+  "name": "ArchiveroSeguro API",
+  "type": "collection",
+  "ignore": [],
+  "items": [
+    { "name": "Health", "type": "folder" },
+    { "name": "Auth", "type": "folder" },
+    { "name": "Users", "type": "folder" },
+    { "name": "Roles", "type": "folder" },
+    { "name": "Credentials", "type": "folder" },
+    { "name": "Categories", "type": "folder" },
+    { "name": "Security Logs", "type": "folder" }
+  ]
+}

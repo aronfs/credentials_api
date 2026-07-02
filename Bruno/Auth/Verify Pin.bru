@@ -1,0 +1,22 @@
+meta {
+  name: Verify Pin
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/auth/verify-pin
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "pin": "1234"
+  }
+}

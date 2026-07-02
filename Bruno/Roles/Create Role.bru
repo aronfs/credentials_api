@@ -1,0 +1,23 @@
+meta {
+  name: Create Role
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/roles
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "EDITOR",
+    "permissions": ["credentials:read", "credentials:create"]
+  }
+}

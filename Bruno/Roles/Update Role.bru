@@ -1,0 +1,24 @@
+meta {
+  name: Update Role
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/roles/{{roleId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "EDITOR",
+    "permissions": ["credentials:read", "credentials:create", "credentials:update"],
+    "isActive": true
+  }
+}

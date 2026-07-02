@@ -1,0 +1,25 @@
+meta {
+  name: Update User
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/users/{{userId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{token}}
+}
+
+body:json {
+  {
+    "name": "Usuario Actualizado",
+    "email": "actualizado@example.com",
+    "isActive": true,
+    "biometricEnabled": false
+  }
+}

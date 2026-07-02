@@ -1,0 +1,15 @@
+meta {
+  name: Delete Role
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/roles/{{roleId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
