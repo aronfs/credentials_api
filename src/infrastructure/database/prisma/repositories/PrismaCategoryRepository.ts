@@ -5,14 +5,7 @@ import { getPrismaClient } from "../PrismaClient";
 export class PrismaCategoryRepository implements CategoryRepositoryPort {
   async create(input: CreateCategoryInput): Promise<Category> {
     const prisma = getPrismaClient();
-    const category = await prisma.category.create({
-      data: {
-        userId: input.userId,
-        name: input.name,
-        color: input.color ?? "#6366f1",
-        icon: input.icon ?? "folder",
-      },
-    });
+    const category = await prisma.category.create({ data: input });
     return this.mapToEntity(category);
   }
 
@@ -43,14 +36,9 @@ export class PrismaCategoryRepository implements CategoryRepositoryPort {
     const prisma = getPrismaClient();
     const category = await prisma.category.update({
       where: { id },
-      data: {
-        ...(input.name !== undefined && { name: input.name }),
-        ...(input.color !== undefined && { color: input.color }),
-        ...(input.icon !== undefined && { icon: input.icon }),
-        ...(input.isActive !== undefined && { isActive: input.isActive }),
-      },
+      data: input,
     });
-    return this.mapToEntity(category);
+    return category ? this.mapToEntity(category) : null;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -61,6 +49,11 @@ export class PrismaCategoryRepository implements CategoryRepositoryPort {
     } catch {
       return false;
     }
+  }
+
+  async countByUserId(userId: string): Promise<number> {
+    const prisma = getPrismaClient();
+    return prisma.category.count({ where: { userId, isActive: true } });
   }
 
   private mapToEntity(category: any): Category {

@@ -48,6 +48,15 @@ function getStatusCode(message: string): number {
     "Permiso denegado": 403,
     "No tienes permiso para ver esta contraseña": 403,
     "No se pudo descifrar la contraseña": 500,
+    "PIN actual incorrecto": 400,
+    "El nuevo PIN debe tener entre 4 y 6 dígitos": 400,
+    "Contraseña actual incorrecta": 400,
+    "La nueva contraseña debe tener al menos 8 caracteres": 400,
+    "La longitud debe estar entre 8 y 64 caracteres": 400,
+    "Debe incluir al menos un tipo de caracter": 400,
+    "La contraseña no puede estar vacía": 400,
+    "El nombre debe tener al menos 2 caracteres": 400,
+    "El nombre no puede tener más de 80 caracteres": 400,
   };
 
   return errorMap[message] || 400;

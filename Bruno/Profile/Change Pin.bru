@@ -1,0 +1,23 @@
+meta {
+  name: Change Pin
+  type: http
+  seq: 3
+}
+
+patch {
+  url: {{baseUrl}}/api/profile/change-pin
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "currentPin": "1234",
+    "newPin": "5678"
+  }
+}

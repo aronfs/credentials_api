@@ -7,6 +7,9 @@ import { DeleteCredentialUseCase } from "../../../application/use-cases/credenti
 import { ToggleFavoriteCredentialUseCase } from "../../../application/use-cases/credentials/ToggleFavoriteCredentialUseCase";
 import { SearchCredentialsUseCase } from "../../../application/use-cases/credentials/SearchCredentialsUseCase";
 import { ViewCredentialPasswordUseCase } from "../../../application/use-cases/credentials/ViewCredentialPasswordUseCase";
+import { FavoriteCredentialUseCase } from "../../../application/use-cases/credentials/FavoriteCredentialUseCase";
+import { UnfavoriteCredentialUseCase } from "../../../application/use-cases/credentials/UnfavoriteCredentialUseCase";
+import { ListFavoriteCredentialsUseCase } from "../../../application/use-cases/credentials/ListFavoriteCredentialsUseCase";
 import { successResponse } from "../../../application/dto/ApiResponse";
 
 export class CredentialController {
@@ -18,7 +21,10 @@ export class CredentialController {
     private deleteCredentialUseCase: DeleteCredentialUseCase,
     private toggleFavoriteCredentialUseCase: ToggleFavoriteCredentialUseCase,
     private searchCredentialsUseCase: SearchCredentialsUseCase,
-    private viewCredentialPasswordUseCase: ViewCredentialPasswordUseCase
+    private viewCredentialPasswordUseCase: ViewCredentialPasswordUseCase,
+    private favoriteCredentialUseCase: FavoriteCredentialUseCase,
+    private unfavoriteCredentialUseCase: UnfavoriteCredentialUseCase,
+    private listFavoriteCredentialsUseCase: ListFavoriteCredentialsUseCase
   ) {}
 
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -96,6 +102,48 @@ export class CredentialController {
         req.user!.userId
       );
       res.json(successResponse("Favorito actualizado correctamente", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  favorite = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.favoriteCredentialUseCase.execute(
+        req.params.id,
+        req.user!.userId
+      );
+      res.json(successResponse("Credencial agregada a favoritos correctamente", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  unfavorite = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.unfavoriteCredentialUseCase.execute(
+        req.params.id,
+        req.user!.userId
+      );
+      res.json(successResponse("Credencial quitada de favoritos correctamente", result));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  listFavorites = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
+
+      const result = await this.listFavoriteCredentialsUseCase.execute(
+        req.user!.userId,
+        page,
+        limit,
+        search
+      );
+      res.json(successResponse("Credenciales favoritas obtenidas correctamente", result));
     } catch (error) {
       next(error);
     }

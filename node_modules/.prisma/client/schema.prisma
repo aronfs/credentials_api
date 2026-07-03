@@ -51,6 +51,7 @@ model Credential {
   tags              String[]
   strength          Int?
   isFavorite        Boolean   @default(false)
+  favoriteAt        DateTime?
   lastUsedAt        DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt

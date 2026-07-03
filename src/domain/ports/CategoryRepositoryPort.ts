@@ -7,4 +7,5 @@ export interface CategoryRepositoryPort {
   findByIdAndUserId(id: string, userId: string): Promise<Category | null>;
   update(id: string, input: UpdateCategoryInput): Promise<Category | null>;
   delete(id: string): Promise<boolean>;
+  countByUserId(userId: string): Promise<number>;
 }

@@ -1,0 +1,15 @@
+meta {
+  name: Main Dashboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/dashboard/main
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{access_token}}
+}

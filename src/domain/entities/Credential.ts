@@ -12,6 +12,7 @@ export interface Credential {
   tags: string[];
   strength: number | null;
   isFavorite: boolean;
+  favoriteAt: Date | null;
   lastUsedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +40,7 @@ export interface UpdateCredentialInput {
   tags?: string[];
   strength?: number;
   isFavorite?: boolean;
+  favoriteAt?: Date | null;
   lastUsedAt?: Date | null;
 }
 
@@ -53,6 +55,7 @@ export interface CredentialResponse {
   tags: string[];
   strength: number | null;
   isFavorite: boolean;
+  favoriteAt: Date | null;
   lastUsedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

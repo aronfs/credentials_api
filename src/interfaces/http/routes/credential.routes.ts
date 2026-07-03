@@ -13,6 +13,12 @@ export function createCredentialRouter(credentialController: CredentialControlle
 
   router.use(authMiddleware);
 
+  router.get(
+    "/favorites",
+    permissionMiddleware("credentials:read"),
+    credentialController.listFavorites
+  );
+
   router.post(
     "/",
     permissionMiddleware("credentials:create"),
@@ -53,6 +59,18 @@ export function createCredentialRouter(credentialController: CredentialControlle
 
   router.patch(
     "/:id/favorite",
+    permissionMiddleware("credentials:update"),
+    credentialController.favorite
+  );
+
+  router.patch(
+    "/:id/unfavorite",
+    permissionMiddleware("credentials:update"),
+    credentialController.unfavorite
+  );
+
+  router.patch(
+    "/:id/toggle-favorite",
     permissionMiddleware("credentials:update"),
     credentialController.toggleFavorite
   );

@@ -10,6 +10,9 @@
     { "name": "Roles", "type": "folder" },
     { "name": "Credentials", "type": "folder" },
     { "name": "Categories", "type": "folder" },
-    { "name": "Security Logs", "type": "folder" }
+    { "name": "Security Logs", "type": "folder" },
+    { "name": "Dashboard", "type": "folder" },
+    { "name": "Profile", "type": "folder" },
+    { "name": "Password Generator", "type": "folder" }
   ]
 }

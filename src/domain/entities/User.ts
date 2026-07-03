@@ -39,3 +39,10 @@ export interface UserResponse {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface UserWithRoleResponse extends UserResponse {
+  role: {
+    id: string;
+    name: string;
+  };
+}

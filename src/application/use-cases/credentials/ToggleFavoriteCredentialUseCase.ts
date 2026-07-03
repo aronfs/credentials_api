@@ -1,5 +1,5 @@
 import { CredentialRepositoryPort } from "../../../domain/ports/CredentialRepositoryPort";
-import { Credential, CredentialResponse } from "../../../domain/entities/Credential";
+import { CredentialResponse } from "../../../domain/entities/Credential";
 
 export class ToggleFavoriteCredentialUseCase {
   constructor(private credentialRepository: CredentialRepositoryPort) {}
@@ -10,8 +10,10 @@ export class ToggleFavoriteCredentialUseCase {
       throw new Error("Credencial no encontrada");
     }
 
+    const isFavorite = !credential.isFavorite;
     const updatedCredential = await this.credentialRepository.update(id, {
-      isFavorite: !credential.isFavorite,
+      isFavorite,
+      favoriteAt: isFavorite ? new Date() : null,
     });
 
     if (!updatedCredential) {
@@ -29,6 +31,7 @@ export class ToggleFavoriteCredentialUseCase {
       tags: updatedCredential.tags,
       strength: updatedCredential.strength,
       isFavorite: updatedCredential.isFavorite,
+      favoriteAt: updatedCredential.favoriteAt,
       lastUsedAt: updatedCredential.lastUsedAt,
       createdAt: updatedCredential.createdAt,
       updatedAt: updatedCredential.updatedAt,

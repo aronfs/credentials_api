@@ -14,6 +14,7 @@ import { PrismaSecurityLogRepository } from "./infrastructure/database/prisma/re
 import { BunHashService } from "./infrastructure/security/BunHashService";
 import { JwtTokenService } from "./infrastructure/security/JwtTokenService";
 import { AesGcmEncryptionService } from "./infrastructure/security/AesGcmEncryptionService";
+import { PasswordGeneratorService } from "./infrastructure/security/PasswordGeneratorService";
 
 import { RegisterUserUseCase } from "./application/use-cases/auth/RegisterUserUseCase";
 import { LoginUseCase } from "./application/use-cases/auth/LoginUseCase";
@@ -36,6 +37,9 @@ import { GetCredentialByIdUseCase } from "./application/use-cases/credentials/Ge
 import { UpdateCredentialUseCase } from "./application/use-cases/credentials/UpdateCredentialUseCase";
 import { DeleteCredentialUseCase } from "./application/use-cases/credentials/DeleteCredentialUseCase";
 import { ToggleFavoriteCredentialUseCase } from "./application/use-cases/credentials/ToggleFavoriteCredentialUseCase";
+import { FavoriteCredentialUseCase } from "./application/use-cases/credentials/FavoriteCredentialUseCase";
+import { UnfavoriteCredentialUseCase } from "./application/use-cases/credentials/UnfavoriteCredentialUseCase";
+import { ListFavoriteCredentialsUseCase } from "./application/use-cases/credentials/ListFavoriteCredentialsUseCase";
 import { SearchCredentialsUseCase } from "./application/use-cases/credentials/SearchCredentialsUseCase";
 import { ViewCredentialPasswordUseCase } from "./application/use-cases/credentials/ViewCredentialPasswordUseCase";
 import { CreateCategoryUseCase } from "./application/use-cases/categories/CreateCategoryUseCase";
@@ -43,6 +47,13 @@ import { ListCategoriesUseCase } from "./application/use-cases/categories/ListCa
 import { UpdateCategoryUseCase } from "./application/use-cases/categories/UpdateCategoryUseCase";
 import { DeleteCategoryUseCase } from "./application/use-cases/categories/DeleteCategoryUseCase";
 import { ListSecurityLogsUseCase } from "./application/use-cases/security/ListSecurityLogsUseCase";
+import { GetDashboardUseCase } from "./application/use-cases/dashboard/GetDashboardUseCase";
+import { GetProfileUseCase } from "./application/use-cases/profile/GetProfileUseCase";
+import { UpdateProfileUseCase } from "./application/use-cases/profile/UpdateProfileUseCase";
+import { ChangePinUseCase } from "./application/use-cases/profile/ChangePinUseCase";
+import { ChangePasswordUseCase } from "./application/use-cases/profile/ChangePasswordUseCase";
+import { GeneratePasswordUseCase } from "./application/use-cases/security/GeneratePasswordUseCase";
+import { EvaluatePasswordUseCase } from "./application/use-cases/security/EvaluatePasswordUseCase";
 
 import { AuthController } from "./interfaces/http/controllers/AuthController";
 import { UserController } from "./interfaces/http/controllers/UserController";
@@ -50,6 +61,9 @@ import { RoleController } from "./interfaces/http/controllers/RoleController";
 import { CredentialController } from "./interfaces/http/controllers/CredentialController";
 import { CategoryController } from "./interfaces/http/controllers/CategoryController";
 import { SecurityLogController } from "./interfaces/http/controllers/SecurityLogController";
+import { DashboardController } from "./interfaces/http/controllers/DashboardController";
+import { ProfileController } from "./interfaces/http/controllers/ProfileController";
+import { PasswordGeneratorController } from "./interfaces/http/controllers/PasswordGeneratorController";
 
 import { createAuthRouter } from "./interfaces/http/routes/auth.routes";
 import { createUserRouter } from "./interfaces/http/routes/user.routes";
@@ -57,6 +71,9 @@ import { createRoleRouter } from "./interfaces/http/routes/role.routes";
 import { createCredentialRouter } from "./interfaces/http/routes/credential.routes";
 import { createCategoryRouter } from "./interfaces/http/routes/category.routes";
 import { createSecurityLogRouter } from "./interfaces/http/routes/security-log.routes";
+import { createDashboardRouter } from "./interfaces/http/routes/dashboard.routes";
+import { createProfileRouter } from "./interfaces/http/routes/profile.routes";
+import { createPasswordGeneratorRouter } from "./interfaces/http/routes/password-generator.routes";
 
 import { errorMiddleware } from "./interfaces/http/middlewares/errorMiddleware";
 
@@ -82,6 +99,7 @@ async function main(): Promise<void> {
   const hashService = new BunHashService();
   const tokenService = new JwtTokenService();
   const encryptionService = new AesGcmEncryptionService();
+  const passwordGeneratorService = new PasswordGeneratorService();
 
   const registerUserUseCase = new RegisterUserUseCase(
     userRepository, roleRepository, hashService, tokenService, sessionRepository
@@ -119,6 +137,9 @@ async function main(): Promise<void> {
     credentialRepository, securityLogRepository
   );
   const toggleFavoriteCredentialUseCase = new ToggleFavoriteCredentialUseCase(credentialRepository);
+  const favoriteCredentialUseCase = new FavoriteCredentialUseCase(credentialRepository);
+  const unfavoriteCredentialUseCase = new UnfavoriteCredentialUseCase(credentialRepository);
+  const listFavoriteCredentialsUseCase = new ListFavoriteCredentialsUseCase(credentialRepository);
   const searchCredentialsUseCase = new SearchCredentialsUseCase(credentialRepository);
   const viewCredentialPasswordUseCase = new ViewCredentialPasswordUseCase(
     credentialRepository, encryptionService, securityLogRepository, roleRepository
@@ -130,6 +151,20 @@ async function main(): Promise<void> {
   const deleteCategoryUseCase = new DeleteCategoryUseCase(categoryRepository, securityLogRepository);
 
   const listSecurityLogsUseCase = new ListSecurityLogsUseCase(securityLogRepository);
+
+  const getDashboardUseCase = new GetDashboardUseCase(credentialRepository, categoryRepository);
+
+  const getProfileUseCase = new GetProfileUseCase(
+    userRepository, roleRepository, credentialRepository, categoryRepository
+  );
+  const updateProfileUseCase = new UpdateProfileUseCase(userRepository);
+  const changePinUseCase = new ChangePinUseCase(userRepository, hashService);
+  const changePasswordUseCase = new ChangePasswordUseCase(
+    userRepository, hashService, sessionRepository
+  );
+
+  const generatePasswordUseCase = new GeneratePasswordUseCase(passwordGeneratorService);
+  const evaluatePasswordUseCase = new EvaluatePasswordUseCase(passwordGeneratorService);
 
   const authController = new AuthController(
     registerUserUseCase, loginUseCase, refreshTokenUseCase, logoutUseCase, verifyPinUseCase
@@ -143,12 +178,20 @@ async function main(): Promise<void> {
   const credentialController = new CredentialController(
     createCredentialUseCase, listCredentialsUseCase, getCredentialByIdUseCase,
     updateCredentialUseCase, deleteCredentialUseCase, toggleFavoriteCredentialUseCase,
-    searchCredentialsUseCase, viewCredentialPasswordUseCase
+    searchCredentialsUseCase, viewCredentialPasswordUseCase,
+    favoriteCredentialUseCase, unfavoriteCredentialUseCase, listFavoriteCredentialsUseCase
   );
   const categoryController = new CategoryController(
     createCategoryUseCase, listCategoriesUseCase, updateCategoryUseCase, deleteCategoryUseCase
   );
   const securityLogController = new SecurityLogController(listSecurityLogsUseCase);
+  const dashboardController = new DashboardController(getDashboardUseCase);
+  const profileController = new ProfileController(
+    getProfileUseCase, updateProfileUseCase, changePinUseCase, changePasswordUseCase
+  );
+  const passwordGeneratorController = new PasswordGeneratorController(
+    generatePasswordUseCase, evaluatePasswordUseCase
+  );
 
   app.use("/api/auth", createAuthRouter(authController));
   app.use("/api/users", createUserRouter(userController));
@@ -156,6 +199,9 @@ async function main(): Promise<void> {
   app.use("/api/credentials", createCredentialRouter(credentialController));
   app.use("/api/categories", createCategoryRouter(categoryController));
   app.use("/api/security-logs", createSecurityLogRouter(securityLogController));
+  app.use("/api/dashboard", createDashboardRouter(dashboardController));
+  app.use("/api/profile", createProfileRouter(profileController));
+  app.use("/api/security/password-generator", createPasswordGeneratorRouter(passwordGeneratorController));
 
   app.get("/api/health", (_req, res) => {
     res.json({ success: true, message: "API funcionando correctamente" });

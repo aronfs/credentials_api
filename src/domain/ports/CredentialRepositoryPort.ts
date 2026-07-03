@@ -1,4 +1,14 @@
-import { Credential, CreateCredentialInput, UpdateCredentialInput } from "../entities/Credential";
+import {
+  Credential, CreateCredentialInput, UpdateCredentialInput
+} from "../entities/Credential";
+
+export interface PaginatedCredentials {
+  items: Credential[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 export interface CredentialRepositoryPort {
   create(input: CreateCredentialInput & {
@@ -20,4 +30,13 @@ export interface CredentialRepositoryPort {
   findByCategory(userId: string, categoryId: string): Promise<Credential[]>;
   findFavoritesByUserId(userId: string): Promise<Credential[]>;
   countByUserId(userId: string): Promise<number>;
+  countFavoritesByUserId(userId: string): Promise<number>;
+  countRecentByUserId(userId: string, days: number): Promise<number>;
+  findRecentByUserId(userId: string, limit: number): Promise<Credential[]>;
+  findFavoritesPaginated(userId: string, page: number, limit: number, search?: string): Promise<PaginatedCredentials>;
+  findWithNullCategory(userId: string): Promise<Credential[]>;
+  findStaleCredentials(userId: string, days: number): Promise<Credential[]>;
+  findWeakCredentials(userId: string, maxStrength: number): Promise<Credential[]>;
+  averageStrengthByUserId(userId: string): Promise<number | null>;
+  countCredentialsByCategory(userId: string): Promise<{ categoryId: string | null; count: number }[]>;
 }

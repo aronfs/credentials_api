@@ -78,6 +78,7 @@ export class CreateCredentialUseCase {
       tags: credential.tags,
       strength: credential.strength,
       isFavorite: credential.isFavorite,
+      favoriteAt: credential.favoriteAt,
       lastUsedAt: credential.lastUsedAt,
       createdAt: credential.createdAt,
       updatedAt: credential.updatedAt,

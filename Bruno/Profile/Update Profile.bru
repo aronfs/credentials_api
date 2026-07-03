@@ -1,0 +1,22 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{baseUrl}}/api/profile/me
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Authorization: Bearer {{access_token}}
+}
+
+body:json {
+  {
+    "name": "Usuario Actualizado"
+  }
+}
