@@ -1,0 +1,15 @@
+meta {
+  name: Get Profile Image File
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/v1/profile-image/file
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}

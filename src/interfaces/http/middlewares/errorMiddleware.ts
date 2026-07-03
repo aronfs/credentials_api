@@ -1,3 +1,4 @@
+import multer from "multer";
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { errorResponse } from "../../../application/dto/ApiResponse";
@@ -16,6 +17,15 @@ export function errorMiddleware(
         message: e.message,
       })))
     );
+    return;
+  }
+
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      res.status(400).json(errorResponse("PROFILE_IMAGE_TOO_LARGE"));
+      return;
+    }
+    res.status(400).json(errorResponse(err.code));
     return;
   }
 
@@ -57,6 +67,14 @@ function getStatusCode(message: string): number {
     "La contraseña no puede estar vacía": 400,
     "El nombre debe tener al menos 2 caracteres": 400,
     "El nombre no puede tener más de 80 caracteres": 400,
+    "PROFILE_IMAGE_FILE_REQUIRED": 400,
+    "PROFILE_IMAGE_INVALID_TYPE": 400,
+    "PROFILE_IMAGE_INVALID_EXTENSION": 400,
+    "PROFILE_IMAGE_TOO_LARGE": 400,
+    "PROFILE_IMAGE_STORAGE_ERROR": 500,
+    "PROFILE_IMAGE_DATABASE_ERROR": 500,
+    "PROFILE_IMAGE_NOT_FOUND": 404,
+    "PROFILE_IMAGE_DELETE_ERROR": 500,
   };
 
   return errorMap[message] || 400;

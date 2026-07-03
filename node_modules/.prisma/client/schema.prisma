@@ -24,6 +24,23 @@ model User {
   categories   Category[]
   sessions     Session[]
   securityLogs SecurityLog[]
+  profileImage UserImage?
+}
+
+model UserImage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @map("user_id") @db.ObjectId
+  fileName  String   @map("file_name")
+  filePath  String   @map("file_path")
+  fileUrl   String   @map("file_url")
+  mimeType  String   @map("mime_type")
+  fileSize  Int      @map("file_size")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_images")
 }
 
 model Role {

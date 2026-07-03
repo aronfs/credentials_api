@@ -9,6 +9,9 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
   AES_SECRET_KEY: z.string().min(32),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  UPLOAD_MAX_FILE_SIZE: z.coerce.number().default(5242880),
+  UPLOAD_DIR: z.string().default("uploads"),
+  IMAGE_STORAGE_PATH: z.string().default("storage/images"),
 });
 
 const envParsed = envSchema.safeParse(process.env);

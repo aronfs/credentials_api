@@ -80,18 +80,50 @@ bun run dev
 - `DELETE /api/roles/:id` - Eliminar rol
 - `POST /api/roles/assign` - Asignar rol a usuario
 
+### Profile
+- `GET /api/profile/me` - Obtener perfil con estadísticas (total de credenciales, categorías, favoritos y foto de perfil)
+- `PUT /api/profile/me` - Actualizar nombre
+  ```json
+  { "name": "Nuevo Nombre" }
+  ```
+- `PATCH /api/profile/change-pin` - Cambiar PIN
+  ```json
+  { "currentPin": "1234", "newPin": "5678" }
+  ```
+- `PATCH /api/profile/change-password` - Cambiar contraseña
+  ```json
+  { "currentPassword": "actual", "newPassword": "nueva123" }
+  ```
+
+### Profile Image (requiere JWT)
+- `GET /api/v1/profile-image` - Obtener metadatos de la foto de perfil
+- `GET /api/v1/profile-image/file` - Descargar archivo físico de la foto de perfil
+- `POST /api/v1/profile-image` - Subir/actualizar foto de perfil (`multipart/form-data`, campo: `file`)
+  - Formatos aceptados: JPG, PNG, WEBP
+  - Tamaño máximo: 5 MB
+  - Reemplaza automáticamente la imagen anterior
+- `DELETE /api/v1/profile-image` - Eliminar foto de perfil (idempotente)
+
+Los archivos estáticos se sirven públicamente en `/storage/images/...`.
+
 ### Credentials
 - `POST /api/credentials` - Crear credencial
-- `GET /api/credentials` - Listar credenciales (soporta ?categoryId= y ?favorite=true)
+- `GET /api/credentials` - Listar credenciales
+  - Query params: `?categoryId=...` (filtrar por categoría), `?favorite=true` (solo favoritos)
 - `GET /api/credentials/search?q=` - Buscar credenciales
+- `GET /api/credentials/favorites` - Listar favoritos (paginado)
+  - Query params: `?page=1&limit=10&search=...`
 - `GET /api/credentials/:id` - Detalle de credencial
+- `GET /api/credentials/:id/password` - Ver contraseña (requiere permiso `credentials:read`)
 - `PUT /api/credentials/:id` - Actualizar credencial
-- `PATCH /api/credentials/:id/favorite` - Marcar/desmarcar favorito
+- `PATCH /api/credentials/:id/favorite` - Marcar como favorito
+- `PATCH /api/credentials/:id/unfavorite` - Quitar de favoritos
+- `PATCH /api/credentials/:id/toggle-favorite` - Alternar favorito
 - `DELETE /api/credentials/:id` - Eliminar credencial
 
 ### Categories
 - `POST /api/categories` - Crear categoría
-- `GET /api/categories` - Listar categorías
+- `GET /api/categories` - Listar categorías (incluye `totalCredentials` por categoría)
 - `PUT /api/categories/:id` - Actualizar categoría
 - `DELETE /api/categories/:id` - Eliminar categoría
 

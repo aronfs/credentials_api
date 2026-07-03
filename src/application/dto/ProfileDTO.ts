@@ -1,3 +1,10 @@
+export interface ProfileImageInfo {
+  id: string;
+  fileUrl: string;
+  mimeType: string;
+  fileSize: number;
+}
+
 export interface ProfileUserData {
   id: string;
   name: string;
@@ -7,6 +14,7 @@ export interface ProfileUserData {
     id: string;
     name: string;
   };
+  profileImage: ProfileImageInfo | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

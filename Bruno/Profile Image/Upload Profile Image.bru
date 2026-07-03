@@ -1,0 +1,19 @@
+meta {
+  name: Upload Profile Image
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/v1/profile-image
+  body: multipart-form
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{token}}
+}
+
+body:multipart-form {
+  file: @file(./avatar.webp)
+}

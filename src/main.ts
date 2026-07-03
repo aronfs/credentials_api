@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import path from "path";
 import { env } from "./infrastructure/config/env";
 import { connectDatabase, disconnectDatabase } from "./infrastructure/database/prisma/PrismaClient";
 
@@ -10,6 +11,9 @@ import { PrismaCredentialRepository } from "./infrastructure/database/prisma/rep
 import { PrismaCategoryRepository } from "./infrastructure/database/prisma/repositories/PrismaCategoryRepository";
 import { PrismaSessionRepository } from "./infrastructure/database/prisma/repositories/PrismaSessionRepository";
 import { PrismaSecurityLogRepository } from "./infrastructure/database/prisma/repositories/PrismaSecurityLogRepository";
+import { PrismaProfileImageRepository } from "./infrastructure/database/prisma/repositories/PrismaProfileImageRepository";
+
+import { ImageBucketService } from "./infrastructure/storage/ImageBucketService";
 
 import { BunHashService } from "./infrastructure/security/BunHashService";
 import { JwtTokenService } from "./infrastructure/security/JwtTokenService";
@@ -52,6 +56,10 @@ import { GetProfileUseCase } from "./application/use-cases/profile/GetProfileUse
 import { UpdateProfileUseCase } from "./application/use-cases/profile/UpdateProfileUseCase";
 import { ChangePinUseCase } from "./application/use-cases/profile/ChangePinUseCase";
 import { ChangePasswordUseCase } from "./application/use-cases/profile/ChangePasswordUseCase";
+import { UploadProfileImageUseCase } from "./application/use-cases/profile-image/UploadProfileImageUseCase";
+import { GetProfileImageUseCase } from "./application/use-cases/profile-image/GetProfileImageUseCase";
+import { GetProfileImageFileUseCase } from "./application/use-cases/profile-image/GetProfileImageFileUseCase";
+import { DeleteProfileImageUseCase } from "./application/use-cases/profile-image/DeleteProfileImageUseCase";
 import { GeneratePasswordUseCase } from "./application/use-cases/security/GeneratePasswordUseCase";
 import { EvaluatePasswordUseCase } from "./application/use-cases/security/EvaluatePasswordUseCase";
 
@@ -63,6 +71,7 @@ import { CategoryController } from "./interfaces/http/controllers/CategoryContro
 import { SecurityLogController } from "./interfaces/http/controllers/SecurityLogController";
 import { DashboardController } from "./interfaces/http/controllers/DashboardController";
 import { ProfileController } from "./interfaces/http/controllers/ProfileController";
+import { ProfileImageController } from "./interfaces/http/controllers/ProfileImageController";
 import { PasswordGeneratorController } from "./interfaces/http/controllers/PasswordGeneratorController";
 
 import { createAuthRouter } from "./interfaces/http/routes/auth.routes";
@@ -73,6 +82,7 @@ import { createCategoryRouter } from "./interfaces/http/routes/category.routes";
 import { createSecurityLogRouter } from "./interfaces/http/routes/security-log.routes";
 import { createDashboardRouter } from "./interfaces/http/routes/dashboard.routes";
 import { createProfileRouter } from "./interfaces/http/routes/profile.routes";
+import { createProfileImageRouter } from "./interfaces/http/routes/profile-image.routes";
 import { createPasswordGeneratorRouter } from "./interfaces/http/routes/password-generator.routes";
 
 import { errorMiddleware } from "./interfaces/http/middlewares/errorMiddleware";
@@ -88,6 +98,8 @@ async function main(): Promise<void> {
     credentials: true,
   }));
   app.use(express.json({ limit: "10mb" }));
+
+  app.use("/storage/images", express.static(path.resolve(env.IMAGE_STORAGE_PATH)));
 
   const userRepository = new PrismaUserRepository();
   const roleRepository = new PrismaRoleRepository();
@@ -154,8 +166,16 @@ async function main(): Promise<void> {
 
   const getDashboardUseCase = new GetDashboardUseCase(credentialRepository, categoryRepository);
 
+  const profileImageRepository = new PrismaProfileImageRepository();
+  const imageBucketService = new ImageBucketService();
+
+  const uploadProfileImageUseCase = new UploadProfileImageUseCase(profileImageRepository, imageBucketService);
+  const getProfileImageUseCase = new GetProfileImageUseCase(profileImageRepository);
+  const getProfileImageFileUseCase = new GetProfileImageFileUseCase(profileImageRepository, imageBucketService);
+  const deleteProfileImageUseCase = new DeleteProfileImageUseCase(profileImageRepository, imageBucketService);
+
   const getProfileUseCase = new GetProfileUseCase(
-    userRepository, roleRepository, credentialRepository, categoryRepository
+    userRepository, roleRepository, credentialRepository, categoryRepository, profileImageRepository
   );
   const updateProfileUseCase = new UpdateProfileUseCase(userRepository);
   const changePinUseCase = new ChangePinUseCase(userRepository, hashService);
@@ -189,6 +209,9 @@ async function main(): Promise<void> {
   const profileController = new ProfileController(
     getProfileUseCase, updateProfileUseCase, changePinUseCase, changePasswordUseCase
   );
+  const profileImageController = new ProfileImageController(
+    uploadProfileImageUseCase, getProfileImageUseCase, getProfileImageFileUseCase, deleteProfileImageUseCase
+  );
   const passwordGeneratorController = new PasswordGeneratorController(
     generatePasswordUseCase, evaluatePasswordUseCase
   );
@@ -201,6 +224,7 @@ async function main(): Promise<void> {
   app.use("/api/security-logs", createSecurityLogRouter(securityLogController));
   app.use("/api/dashboard", createDashboardRouter(dashboardController));
   app.use("/api/profile", createProfileRouter(profileController));
+  app.use("/api/v1/profile-image", createProfileImageRouter(profileImageController));
   app.use("/api/security/password-generator", createPasswordGeneratorRouter(passwordGeneratorController));
 
   app.get("/api/health", (_req, res) => {

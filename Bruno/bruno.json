@@ -13,6 +13,7 @@
     { "name": "Security Logs", "type": "folder" },
     { "name": "Dashboard", "type": "folder" },
     { "name": "Profile", "type": "folder" },
-    { "name": "Password Generator", "type": "folder" }
+    { "name": "Password Generator", "type": "folder" },
+    { "name": "Profile Image", "type": "folder" }
   ]
 }
