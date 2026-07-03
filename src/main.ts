@@ -146,7 +146,7 @@ async function main(): Promise<void> {
   );
 
   const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository, securityLogRepository);
-  const listCategoriesUseCase = new ListCategoriesUseCase(categoryRepository);
+  const listCategoriesUseCase = new ListCategoriesUseCase(categoryRepository, credentialRepository);
   const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository, securityLogRepository);
   const deleteCategoryUseCase = new DeleteCategoryUseCase(categoryRepository, securityLogRepository);
 

@@ -44,6 +44,7 @@ export class CreateCategoryUseCase {
       isActive: category.isActive,
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
+      totalCredentials: 0,
     };
   }
 }

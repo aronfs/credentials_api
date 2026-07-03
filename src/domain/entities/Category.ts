@@ -32,4 +32,5 @@ export interface CategoryResponse {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  totalCredentials: number;
 }
