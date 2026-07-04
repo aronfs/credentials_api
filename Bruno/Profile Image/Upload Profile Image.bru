@@ -6,14 +6,14 @@ meta {
 
 post {
   url: {{baseUrl}}/api/v1/profile-image
-  body: multipart-form
+  body: multipartForm
   auth: none
 }
 
 headers {
-  Authorization: Bearer {{token}}
+  Authorization: Bearer {{access_token}}
 }
 
 body:multipart-form {
-  file: @file(./avatar.webp)
+  file: @file(/home/aaronfs/Descargas/655820015_2391026634750108_7668639975339766925_n.jpg) @contentType(image/jpeg)
 }
